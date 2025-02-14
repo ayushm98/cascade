@@ -1,0 +1,102 @@
+"""Model pricing constants and cost calculation."""
+
+from typing import TypedDict
+
+
+class ModelPricing(TypedDict):
+    """Pricing for a model (per 1K tokens)."""
+    input: float
+    output: float
+
+
+# Pricing per 1K tokens (as of Feb 2024)
+PRICING: dict[str, ModelPricing] = {
+    # OpenAI models
+    "gpt-4o": {"input": 0.03, "output": 0.06},
+    "gpt-4o-mini": {"input": 0.00015, "output": 0.0006},
+    "gpt-4-turbo": {"input": 0.01, "output": 0.03},
+    "gpt-3.5-turbo": {"input": 0.0005, "output": 0.0015},
+    # Local models (free)
+    "llama3.2": {"input": 0.0, "output": 0.0},
+    "llama3.1": {"input": 0.0, "output": 0.0},
+    "mistral": {"input": 0.0, "output": 0.0},
+}
+
+# Default model for baseline cost calculation
+BASELINE_MODEL = "gpt-4o"
+
+
+def calculate_cost(
+    model: str,
+    prompt_tokens: int,
+    completion_tokens: int,
+) -> float:
+    """
+    Calculate the cost for a request.
+
+    Args:
+        model: Model name
+        prompt_tokens: Number of input tokens
+        completion_tokens: Number of output tokens
+
+    Returns:
+        Cost in dollars
+    """
+    pricing = PRICING.get(model, PRICING["gpt-4o"])
+
+    input_cost = (prompt_tokens / 1000) * pricing["input"]
+    output_cost = (completion_tokens / 1000) * pricing["output"]
+
+    return input_cost + output_cost
+
+
+def calculate_baseline_cost(
+    prompt_tokens: int,
+    completion_tokens: int,
+) -> float:
+    """
+    Calculate what the cost would be using the baseline model.
+
+    This is used to calculate savings.
+
+    Args:
+        prompt_tokens: Number of input tokens
+        completion_tokens: Number of output tokens
+
+    Returns:
+        Cost in dollars if using baseline model
+    """
+    return calculate_cost(BASELINE_MODEL, prompt_tokens, completion_tokens)
+
+
+def calculate_savings(
+    actual_cost: float,
+    baseline_cost: float,
+) -> tuple[float, float]:
+    """
+    Calculate cost savings.
+
+    Args:
+        actual_cost: What was actually spent
+        baseline_cost: What would have been spent with baseline model
+
+    Returns:
+        Tuple of (dollars saved, percentage saved)
+    """
+    dollars_saved = baseline_cost - actual_cost
+    percentage_saved = (dollars_saved / baseline_cost * 100) if baseline_cost > 0 else 0.0
+
+    return dollars_saved, percentage_saved
+
+
+def get_model_price(model: str) -> ModelPricing:
+    """Get pricing for a model."""
+    return PRICING.get(model, PRICING["gpt-4o"])
+
+
+def is_free_model(model: str) -> bool:
+    """Check if a model is free (local)."""
+    pricing = PRICING.get(model)
+    if pricing is None:
+        return False
+    return pricing["input"] == 0.0 and pricing["output"] == 0.0
