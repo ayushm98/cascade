@@ -26,6 +26,13 @@ torch = "^2.1.0"
 onnx = "^1.15.0"
 onnxruntime = "^1.16.0"
 scikit-learn = "^1.4.0"
+# UI dependencies
+streamlit = "^1.31.0"
+plotly = "^5.18.0"
+
+[tool.poetry.scripts]
+cascade-ui = "cascade.ui.app:main"
+cascade-api = "cascade.api.main:app"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"
