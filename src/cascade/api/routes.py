@@ -105,7 +105,7 @@ async def chat_completions(request: ChatCompletionRequest):
 
     # Determine final model
     if request.model == "auto" or request.model is None:
-        final_model = routing.recommended_model
+        final_model = routing.model
     else:
         final_model = request.model
 
@@ -121,12 +121,22 @@ async def chat_completions(request: ChatCompletionRequest):
     provider = await get_provider(final_model)
 
     try:
-        response = await provider.chat_completion(
+        llm_response = await provider.complete(
             model=final_model,
             messages=[{"role": m.role, "content": m.content} for m in request.messages],
             temperature=request.temperature,
             max_tokens=request.max_tokens,
         )
+        # Convert LLMResponse to dict format for compatibility
+        response = {
+            "id": f"cascade-{int(time.time())}",
+            "choices": [{"message": {"content": llm_response.content}}],
+            "usage": {
+                "prompt_tokens": llm_response.prompt_tokens,
+                "completion_tokens": llm_response.completion_tokens,
+                "total_tokens": llm_response.prompt_tokens + llm_response.completion_tokens,
+            },
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
