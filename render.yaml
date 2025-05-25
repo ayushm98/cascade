@@ -1,0 +1,34 @@
+# render.yaml - Render deployment configuration
+# https://render.com/docs/infrastructure-as-code
+
+services:
+  # Cascade API
+  - type: web
+    name: cascade-api
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerCommand: uvicorn cascade.api.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHONPATH
+        value: /app/src
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: REDIS_HOST
+        fromService:
+          name: cascade-redis
+          type: redis
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          name: cascade-redis
+          type: redis
+          property: port
+    autoDeploy: true
+
+  # Redis for caching
+  - type: redis
+    name: cascade-redis
+    plan: free
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: []
