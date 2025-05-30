@@ -183,18 +183,92 @@ cascade/
 
 ```bash
 # Run tests
-poetry run pytest
+make test
 
 # Run linting
-poetry run ruff check src/
-poetry run black src/
+make lint
+
+# Format code
+make format
 
 # Train the classifier
-python -m ml.training.train --dataset easy2hard --epochs 5
+make train
 
 # Export to ONNX
-python -m ml.export.convert_to_onnx
+make export-onnx
 ```
+
+## Deployment
+
+### Railway (Recommended)
+
+Railway offers the easiest deployment with automatic builds:
+
+```bash
+# Install Railway CLI
+npm install -g @railway/cli
+
+# Login and deploy
+railway login
+railway init
+railway up
+
+# Set environment variables in Railway dashboard:
+# - OPENAI_API_KEY
+# - REDIS_URL (add Redis plugin)
+```
+
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/cascade)
+
+### Fly.io
+
+```bash
+# Install Fly CLI
+curl -L https://fly.io/install.sh | sh
+
+# Login and deploy
+fly auth login
+fly launch
+fly secrets set OPENAI_API_KEY=sk-your-key
+fly deploy
+```
+
+### Render
+
+1. Fork this repository
+2. Connect to Render
+3. Use the `render.yaml` blueprint
+4. Set `OPENAI_API_KEY` in environment variables
+
+### Docker (Self-hosted)
+
+```bash
+# Build and run with docker-compose
+docker-compose up -d
+
+# Or build manually
+docker build -t cascade .
+docker run -p 8000:8000 -e OPENAI_API_KEY=sk-xxx cascade
+```
+
+### Environment Variables for Production
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `OPENAI_API_KEY` | Yes | Your OpenAI API key |
+| `REDIS_URL` | No | Redis connection URL (for caching) |
+| `QDRANT_URL` | No | Qdrant URL (for semantic cache) |
+| `PORT` | No | Server port (default: 8000) |
+
+## API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/` | GET | Service info |
+| `/health` | GET | Health check |
+| `/v1/chat/completions` | POST | OpenAI-compatible chat |
+| `/v1/models` | GET | List available models |
+| `/v1/stats` | GET | Usage statistics |
 
 ## Contributing
 
