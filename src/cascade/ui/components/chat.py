@@ -59,6 +59,28 @@ def render_chat():
             st.rerun()
 
     with col1:
+        # Example queries (show only if no messages yet)
+        if len(st.session_state.messages) == 0:
+            st.markdown("#### 💬 Try These Examples:")
+            ex_col1, ex_col2, ex_col3 = st.columns(3)
+
+            with ex_col1:
+                if st.button("🟢 Simple: What is 2+2?", use_container_width=True):
+                    st.session_state["quick_prompt"] = "What is 2+2?"
+                    st.rerun()
+
+            with ex_col2:
+                if st.button("🟡 Medium: Explain quantum computing", use_container_width=True):
+                    st.session_state["quick_prompt"] = "Explain quantum computing in simple terms"
+                    st.rerun()
+
+            with ex_col3:
+                if st.button("🔴 Complex: Write a Python web scraper", use_container_width=True):
+                    st.session_state["quick_prompt"] = "Write a Python function to scrape data from a website"
+                    st.rerun()
+
+            st.divider()
+
         # Display chat messages
         chat_container = st.container()
         with chat_container:
@@ -73,8 +95,9 @@ def render_chat():
                             f"Latency: {meta.get('latency_ms', 0):.0f}ms"
                         )
 
-        # Chat input
-        if prompt := st.chat_input("Type your message..."):
+        # Chat input (check for quick prompt from example buttons)
+        quick_prompt = st.session_state.pop("quick_prompt", None)
+        if prompt := (quick_prompt or st.chat_input("Type your message...")):
             # Add user message
             st.session_state.messages.append({"role": "user", "content": prompt})
 

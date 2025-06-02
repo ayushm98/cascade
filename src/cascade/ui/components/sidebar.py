@@ -1,6 +1,16 @@
 """Sidebar component for navigation and settings."""
 
 import streamlit as st
+import httpx
+
+
+def check_api_connection(api_url: str) -> bool:
+    """Check if API is reachable."""
+    try:
+        response = httpx.get(f"{api_url}/health", timeout=2.0)
+        return response.status_code == 200
+    except Exception:
+        return False
 
 
 def render_sidebar() -> str:
@@ -31,10 +41,17 @@ def render_sidebar() -> str:
         # API endpoint configuration
         api_url = st.text_input(
             "API Endpoint",
-            value="http://localhost:8000",
+            value="http://localhost:8889",
             help="Cascade API server URL",
         )
         st.session_state["api_url"] = api_url
+
+        # Connection status
+        is_connected = check_api_connection(api_url)
+        if is_connected:
+            st.success("🟢 Connected")
+        else:
+            st.error("🔴 Disconnected")
 
         # Model selection
         default_model = st.selectbox(

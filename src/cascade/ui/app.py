@@ -34,10 +34,25 @@ def main():
             padding: 1rem;
             color: white;
         }
+        /* Metric cards with better contrast */
         .stMetric {
-            background-color: #f0f2f6;
-            padding: 1rem;
-            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .stMetric label {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 500 !important;
+            font-size: 0.9rem !important;
+        }
+        .stMetric [data-testid="stMetricValue"] {
+            color: #ffffff !important;
+            font-size: 2rem !important;
+            font-weight: 700 !important;
+        }
+        .stMetric [data-testid="stMetricDelta"] {
+            color: #10b981 !important;
         }
         </style>
     """, unsafe_allow_html=True)
