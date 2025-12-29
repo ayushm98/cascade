@@ -1,0 +1,18 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install dependencies
+COPY pyproject.toml ./
+RUN pip install poetry && poetry config virtualenvs.create false && poetry install --no-dev
+
+# Copy application
+COPY src/ ./src/
+COPY app.py ./
+
+# Expose ports
+EXPOSE 7860 8000
+
+# Start both API and UI
+CMD uvicorn cascade.api.main:app --host 0.0.0.0 --port 8000 & \
+    streamlit run app.py --server.port 7860 --server.address 0.0.0.0
