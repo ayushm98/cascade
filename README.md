@@ -1,3 +1,14 @@
+---
+title: Cascade - Intelligent LLM Router
+emoji: 🌊
+colorFrom: purple
+colorTo: blue
+sdk: streamlit
+sdk_version: "1.31.0"
+app_file: app.py
+pinned: false
+---
+
 # Cascade 🌊
 
 **Intelligent LLM Request Router** - Reduce API costs by 60%+ through smart routing and semantic caching.
