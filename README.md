@@ -3,9 +3,7 @@ title: Cascade - Intelligent LLM Router
 emoji: 🌊
 colorFrom: purple
 colorTo: blue
-sdk: streamlit
-sdk_version: "1.31.0"
-app_file: app.py
+sdk: docker
 pinned: false
 ---
 

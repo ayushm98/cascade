@@ -1,32 +1,39 @@
 FROM python:3.11-slim
 
+# Set working directory
 WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    build-essential \
-    curl \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Poetry
-RUN pip install poetry==1.7.1
+# Create non-root user for security (HF Spaces requirement)
+RUN useradd -m -u 1000 user
+USER user
+ENV HOME=/home/user \
+    PATH=/home/user/.local/bin:$PATH
 
-# Copy dependency files
-COPY pyproject.toml poetry.lock* ./
+# Set working directory for user
+WORKDIR $HOME/app
 
-# Install dependencies (no dev dependencies in production)
-RUN poetry config virtualenvs.create false \
-    && poetry install --no-interaction --no-ansi --no-dev
+# Copy requirements first (for better caching)
+COPY --chown=user requirements.txt ./
 
-# Copy source code
-COPY src/ ./src/
-COPY ml/ ./ml/
+# Install Python dependencies
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
-# Set Python path
-ENV PYTHONPATH=/app/src
+# Copy application code
+COPY --chown=user src/ ./src/
+COPY --chown=user app.py ./
 
-# Expose ports
-EXPOSE 8000 8501
+# Expose port 7860 (HuggingFace Spaces default)
+EXPOSE 7860
 
-# Default command (API server)
-CMD ["uvicorn", "cascade.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Set environment variables
+ENV PORT=7860
+ENV HOST=0.0.0.0
+
+# Run Streamlit
+CMD ["streamlit", "run", "app.py", "--server.port", "7860", "--server.address", "0.0.0.0"]
