@@ -73,9 +73,16 @@ def render_dashboard():
         )
 
     with col2:
+        # Show more decimal places for small amounts
+        saved = stats['cost']['saved_dollars']
+        if saved < 0.01:
+            saved_str = f"${saved:.4f}"
+        else:
+            saved_str = f"${saved:.2f}"
+
         st.metric(
             label="Cost Savings",
-            value=f"${stats['cost']['saved_dollars']:.2f}",
+            value=saved_str,
             delta=f"{stats['cost']['saved_percentage']:.1f}%",
         )
 

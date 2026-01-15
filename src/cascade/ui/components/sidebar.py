@@ -1,5 +1,6 @@
 """Sidebar component for navigation and settings."""
 
+import os
 import streamlit as st
 import httpx
 
@@ -39,9 +40,11 @@ def render_sidebar() -> str:
         st.markdown("### Settings")
 
         # API endpoint configuration
+        # Get default from environment variable (set by docker-compose)
+        default_api_url = os.getenv("API_URL", "http://localhost:8000")
         api_url = st.text_input(
             "API Endpoint",
-            value="http://localhost:8889",
+            value=default_api_url,
             help="Cascade API server URL",
         )
         st.session_state["api_url"] = api_url
@@ -56,7 +59,7 @@ def render_sidebar() -> str:
         # Model selection
         default_model = st.selectbox(
             "Default Model",
-            ["auto", "gpt-4o", "gpt-4o-mini", "gpt-3.5-turbo", "llama3.2"],
+            ["auto", "gemini-2.0-flash-exp", "gemini-1.5-flash", "gemini-1.5-pro", "llama3.2"],
             help="Select default model or 'auto' for smart routing",
         )
         st.session_state["default_model"] = default_model

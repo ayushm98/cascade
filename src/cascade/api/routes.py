@@ -13,7 +13,7 @@ from cascade.api.schemas import (
     ChatCompletionChoice,
 )
 from cascade.router import route_query, RoutingDecision
-from cascade.providers import OpenAIProvider, OllamaProvider
+from cascade.providers import GeminiProvider, OllamaProvider
 from cascade.cache.redis_client import get_redis_client
 from cascade.cache.semantic_cache import get_semantic_cache, CacheHit
 from cascade.cost.tracker import CostTracker, get_cost_tracker
@@ -24,8 +24,8 @@ router = APIRouter()
 
 async def get_provider(model: str):
     """Get the appropriate provider for a model."""
-    if model.startswith("gpt-") or model.startswith("o1"):
-        return OpenAIProvider()
+    if model.startswith("gemini-"):
+        return GeminiProvider()
     else:
         return OllamaProvider()
 
@@ -197,9 +197,9 @@ async def list_models():
     return {
         "models": [
             {"id": "auto", "description": "Automatic routing based on query complexity"},
-            {"id": "gpt-4o", "description": "Most capable OpenAI model"},
-            {"id": "gpt-4o-mini", "description": "Fast and efficient OpenAI model"},
-            {"id": "gpt-3.5-turbo", "description": "Fast OpenAI model"},
+            {"id": "gemini-2.5-flash", "description": "Most capable Gemini model"},
+            {"id": "gemini-1.5-flash", "description": "Fast and efficient Gemini model"},
+            {"id": "gemini-1.5-pro", "description": "Gemini Pro model"},
             {"id": "llama3.2", "description": "Local Llama model via Ollama"},
             {"id": "mistral", "description": "Local Mistral model via Ollama"},
         ]

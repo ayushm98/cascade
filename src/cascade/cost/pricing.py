@@ -9,13 +9,12 @@ class ModelPricing(TypedDict):
     output: float
 
 
-# Pricing per 1K tokens (as of Feb 2024)
+# Pricing per 1K tokens (as of Jan 2025)
 PRICING: dict[str, ModelPricing] = {
-    # OpenAI models
-    "gpt-4o": {"input": 0.03, "output": 0.06},
-    "gpt-4o-mini": {"input": 0.00015, "output": 0.0006},
-    "gpt-4-turbo": {"input": 0.01, "output": 0.03},
-    "gpt-3.5-turbo": {"input": 0.0005, "output": 0.0015},
+    # Gemini models
+    "gemini-2.5-flash": {"input": 0.0003, "output": 0.0012},
+    "gemini-1.5-flash": {"input": 0.000075, "output": 0.0003},
+    "gemini-1.5-pro": {"input": 0.00125, "output": 0.005},
     # Local models (free)
     "llama3.2": {"input": 0.0, "output": 0.0},
     "llama3.1": {"input": 0.0, "output": 0.0},
@@ -23,7 +22,7 @@ PRICING: dict[str, ModelPricing] = {
 }
 
 # Default model for baseline cost calculation
-BASELINE_MODEL = "gpt-4o"
+BASELINE_MODEL = "gemini-2.5-flash"
 
 
 def calculate_cost(
@@ -42,7 +41,7 @@ def calculate_cost(
     Returns:
         Cost in dollars
     """
-    pricing = PRICING.get(model, PRICING["gpt-4o"])
+    pricing = PRICING.get(model, PRICING["gemini-2.5-flash"])
 
     input_cost = (prompt_tokens / 1000) * pricing["input"]
     output_cost = (completion_tokens / 1000) * pricing["output"]
@@ -91,7 +90,7 @@ def calculate_savings(
 
 def get_model_price(model: str) -> ModelPricing:
     """Get pricing for a model."""
-    return PRICING.get(model, PRICING["gpt-4o"])
+    return PRICING.get(model, PRICING["gemini-2.5-flash"])
 
 
 def is_free_model(model: str) -> bool:

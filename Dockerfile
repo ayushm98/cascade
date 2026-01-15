@@ -34,6 +34,7 @@ EXPOSE 7860
 # Set environment variables
 ENV PORT=7860
 ENV HOST=0.0.0.0
+ENV PYTHONPATH=/home/user/app/src
 
 # Run Streamlit
 CMD ["streamlit", "run", "app.py", "--server.port", "7860", "--server.address", "0.0.0.0"]

@@ -38,15 +38,14 @@ class RoutingEngine:
     # Default model mapping
     DEFAULT_MODELS = {
         "simple": "llama3.2",  # Ollama (free)
-        "medium": "gpt-4o-mini",  # Cheap OpenAI
-        "complex": "gpt-4o",  # Best OpenAI
+        "medium": "gemini-2.0-flash-exp",  # Fast Gemini
+        "complex": "gemini-2.0-flash-exp",  # Best Gemini
     }
 
     # Fallback models when primary is unavailable
     FALLBACK_MODELS = {
-        "llama3.2": "gpt-3.5-turbo",
-        "gpt-4o-mini": "gpt-4o",
-        "gpt-4o": "gpt-4o",  # No fallback for top model
+        "llama3.2": "gemini-2.0-flash-exp",
+        "gemini-2.0-flash-exp": "gemini-2.0-flash-exp",  # No fallback for top model
     }
 
     def __init__(
