@@ -37,7 +37,7 @@ class RoutingEngine:
 
     # Default model mapping
     DEFAULT_MODELS = {
-        "simple": "llama3.2",  # Ollama (free)
+        "simple": "gemini-2.0-flash-exp",  # Gemini for simple queries (Ollama not available on VM)
         "medium": "gemini-2.0-flash-exp",  # Fast Gemini
         "complex": "gemini-2.0-flash-exp",  # Best Gemini
     }
