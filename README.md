@@ -20,6 +20,14 @@ pinned: false
 
 ## 🚀 Try It Live
 
+**Live API** (no signup required):
+```bash
+curl -X POST http://136.111.230.240:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{"model":"auto","messages":[{"role":"user","content":"Explain AI in 5 words"}]}'
+```
+
+**Interactive Dashboard**:
 [![Open in Spaces](https://huggingface.co/datasets/huggingface/badges/resolve/main/open-in-hf-spaces-sm-dark.svg)](https://huggingface.co/spaces/ayushm98/cascade)
 
 Experience Cascade's intelligent routing and cost optimization in action!
