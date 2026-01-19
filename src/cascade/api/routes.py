@@ -111,11 +111,27 @@ async def chat_completions(request: ChatCompletionRequest):
 
     # Check cache
     cached_response, cache_type = await try_cache_lookup(query, final_model)
+
+    # Get tracker for tracking cache events
+    tracker = get_cost_tracker()
+
     if cached_response:
-        # Track cache hit
-        tracker = get_cost_tracker()
+        # Track cache hit (exact or semantic)
         tracker.record_cache_hit(cache_type)
-        return ChatCompletionResponse(**cached_response)
+        # Add cache hit metadata
+        response_obj = ChatCompletionResponse(**cached_response)
+        response_obj.cascade_metadata = {
+            "cache_hit": True,
+            "cache_type": cache_type,
+            "routed_model": final_model,
+            "complexity_score": routing.score,
+            "complexity_label": routing.label,
+            "routing_reason": "cached_response",
+        }
+        return response_obj
+    else:
+        # Track cache miss
+        tracker.record_cache_hit("miss")
 
     # Get provider and make request
     provider = await get_provider(final_model)
@@ -165,6 +181,14 @@ async def chat_completions(request: ChatCompletionRequest):
             )
         ],
         usage=usage,
+        cascade_metadata={
+            "cache_hit": False,
+            "cache_type": None,
+            "routed_model": final_model,
+            "complexity_score": routing.score,
+            "complexity_label": routing.label,
+            "routing_reason": routing.reason,
+        },
     )
 
     # Store in cache

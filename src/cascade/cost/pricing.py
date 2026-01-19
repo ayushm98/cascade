@@ -13,8 +13,13 @@ class ModelPricing(TypedDict):
 PRICING: dict[str, ModelPricing] = {
     # Gemini models
     "gemini-2.5-flash": {"input": 0.0003, "output": 0.0012},
+    "gemini-2.0-flash-exp": {"input": 0.0, "output": 0.0},  # Experimental, free
     "gemini-1.5-flash": {"input": 0.000075, "output": 0.0003},
     "gemini-1.5-pro": {"input": 0.00125, "output": 0.005},
+    # OpenAI models (for baseline comparison)
+    "gpt-4o": {"input": 0.0025, "output": 0.01},  # $2.50/$10 per 1M tokens
+    "gpt-4o-mini": {"input": 0.00015, "output": 0.0006},
+    "gpt-3.5-turbo": {"input": 0.0005, "output": 0.0015},
     # Local models (free)
     "llama3.2": {"input": 0.0, "output": 0.0},
     "llama3.1": {"input": 0.0, "output": 0.0},
@@ -22,7 +27,8 @@ PRICING: dict[str, ModelPricing] = {
 }
 
 # Default model for baseline cost calculation
-BASELINE_MODEL = "gemini-2.5-flash"
+# Using GPT-4o to show cost savings vs expensive model
+BASELINE_MODEL = "gpt-4o"
 
 
 def calculate_cost(
